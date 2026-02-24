@@ -1,537 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Calendar</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        /* Header */
-        .calendar-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .month-year {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .today-info {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        /* Navigation */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .nav-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .nav-btn:active {
-            transform: translateY(0);
-        }
-
-        .today-btn {
-            background: #e0e0e0;
-            color: #333;
-        }
-
-        .today-btn:hover {
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Weekdays */
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0;
-            background: white;
-            padding: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .weekday {
-            text-align: center;
-            font-weight: 600;
-            color: #667eea;
-            font-size: 12px;
-            text-transform: uppercase;
-            padding: 10px 5px;
-        }
-
-        /* Days Grid */
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0;
-            padding: 15px;
-            background: white;
-        }
-
-        .day {
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            color: #333;
-            position: relative;
-        }
-
-        .day:hover {
-            background: #f0f0f0;
-            transform: scale(0.95);
-        }
-
-        .day.other-month {
-            color: #ccc;
-            cursor: default;
-        }
-
-        .day.other-month:hover {
-            background: transparent;
-            transform: scale(1);
-        }
-
-        .day.today {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .day.today:hover {
-            transform: scale(1.05);
-        }
-
-        .day.selected {
-            background: #e8d5ff;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .day.selected:hover {
-            transform: scale(1);
-        }
-
-        .day.has-event::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            width: 5px;
-            height: 5px;
-            background: #ff6b6b;
-            border-radius: 50%;
-        }
-
-        /* Event Section */
-        .event-section {
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .event-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .event-input-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .event-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: border-color 0.3s;
-        }
-
-        .event-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .add-event-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .add-event-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .events-list {
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .event-item {
-            background: white;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            border-left: 4px solid #667eea;
-        }
-
-        .event-item-text {
-            flex: 1;
-            word-break: break-word;
-        }
-
-        .delete-event-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s;
-        }
-
-        .delete-event-btn:hover {
-            background: #ff5252;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container {
-                max-width: 100%;
-            }
-
-            .month-year {
-                font-size: 24px;
-            }
-
-            .day {
-                font-size: 14px;
-            }
-
-            .weekday {
-                font-size: 11px;
-            }
-        }
-
-        /* Scrollbar */
-        .events-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .events-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .events-list::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 10px;
-        }
-
-        .events-list::-webkit-scrollbar-thumb:hover {
-            background: #764ba2;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculator</title>
+  <style>
+    :root { --bg:#0f1724; --panel:#0b1220; --accent:#7c3aed; --muted:#94a3b8; --btn:#111827; }
+    * { box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      margin:0;
+      font-family:Segoe UI, system-ui, -apple-system, Roboto, "Helvetica Neue", Arial;
+      background:linear-gradient(180deg,#071129 0%,#08203a 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      color:#e6eef8;
+    }
+    .calc {
+      background:linear-gradient(180deg,var(--panel),#071224);
+      width:360px;
+      border-radius:16px;
+      padding:18px;
+      box-shadow:0 10px 30px rgba(2,6,23,.7);
+    }
+    .display {
+      background:rgba(255,255,255,0.03);
+      padding:18px;
+      border-radius:10px;
+      color:#fff;
+      text-align:right;
+      word-wrap:break-word;
+      min-height:64px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .small { color:var(--muted); font-size:14px; }
+    .big { font-size:28px; line-height:1.1; overflow:hidden; }
+    .keys { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px; }
+    button {
+      background:var(--btn);
+      border:0;
+      color:#e6eef8;
+      padding:16px;
+      font-size:18px;
+      border-radius:10px;
+      cursor:pointer;
+      transition:transform .08s, box-shadow .08s;
+    }
+    button:active { transform:translateY(1px); }
+    .op { background:linear-gradient(180deg,var(--accent),#5b21b6); box-shadow:0 6px 18px rgba(124,58,237,.18); }
+    .wide { grid-column:span 2; }
+    .secondary { background:rgba(255,255,255,0.03); color:var(--muted); }
+    @media (max-width:380px) { .calc { width:100%; } }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="calendar-header">
-            <div class="month-year" id="monthYear"></div>
-            <div class="today-info">Click on a date to add events</div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav-buttons">
-            <button class="nav-btn" onclick="previousMonth()">&larr; Previous</button>
-            <button class="nav-btn today-btn" onclick="goToToday()">Today</button>
-            <button class="nav-btn" onclick="nextMonth()">Next &rarr;</button>
-        </div>
-
-        <!-- Weekdays -->
-        <div class="weekdays">
-            <div class="weekday">Sun</div>
-            <div class="weekday">Mon</div>
-            <div class="weekday">Tue</div>
-            <div class="weekday">Wed</div>
-            <div class="weekday">Thu</div>
-            <div class="weekday">Fri</div>
-            <div class="weekday">Sat</div>
-        </div>
-
-        <!-- Days Grid -->
-        <div class="days-grid" id="daysGrid"></div>
-
-        <!-- Event Section -->
-        <div class="event-section">
-            <div class="event-title">Add Event for <span id="selectedDate">Today</span></div>
-            <div class="event-input-group">
-                <input 
-                    type="text" 
-                    class="event-input" 
-                    id="eventInput" 
-                    placeholder="Enter event name..."
-                    onkeypress="handleEventKeypress(event)"
-                >
-                <button class="add-event-btn" onclick="addEvent()">Add</button>
-            </div>
-            <div class="events-list" id="eventsList"></div>
-        </div>
+  <main class="calc" role="application" aria-label="Calculator">
+    <div class="display" aria-live="polite">
+      <div id="expr" class="small">0</div>
+      <div id="result" class="big">0</div>
     </div>
 
-    <script>
-        let currentDate = new Date();
-        let selectedDate = new Date();
-        const events = {};
+    <div class="keys" role="group" aria-label="Calculator keys">
+      <button class="secondary" data-action="clear">C</button>
+      <button class="secondary" data-action="neg">+/-</button>
+      <button class="secondary" data-action="del">DEL</button>
+      <button class="op" data-value="/">&#247;</button>
 
-        function initCalendar() {
-            renderCalendar();
-            updateSelectedDateDisplay();
-            displayEvents();
+      <button data-value="7">7</button>
+      <button data-value="8">8</button>
+      <button data-value="9">9</button>
+      <button class="op" data-value="*">&#215;</button>
+
+      <button data-value="4">4</button>
+      <button data-value="5">5</button>
+      <button data-value="6">6</button>
+      <button class="op" data-value="-">&minus;</button>
+
+      <button data-value="1">1</button>
+      <button data-value="2">2</button>
+      <button data-value="3">3</button>
+      <button class="op" data-value="+">+</button>
+
+      <button data-value="0" class="wide">0</button>
+      <button data-value=".">.</button>
+      <button class="op" data-action="equals">=</button>
+    </div>
+  </main>
+
+  <script>
+    const exprEl = document.getElementById("expr");
+    const resultEl = document.getElementById("result");
+
+    let expression = "";
+
+    function updateView() {
+      exprEl.textContent = expression || "0";
+      try {
+        if (expression.trim() === "") {
+          resultEl.textContent = "0";
+          return;
         }
+        const val = Function("return (" + expression + ")")();
+        resultEl.textContent = (val === undefined || Number.isNaN(val)) ? "Error" : String(val);
+      } catch (e) {
+        resultEl.textContent = "Error";
+      }
+    }
 
-        function renderCalendar() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            // Update header
-            const monthName = currentDate.toLocaleString('default', { month: 'long' });
-            document.getElementById('monthYear').textContent = `${monthName} ${year}`;
-
-            // Get first day of month and number of days
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-            const daysGrid = document.getElementById('daysGrid');
-            daysGrid.innerHTML = '';
-
-            const today = new Date();
-
-            // Previous month's days
-            for (let i = firstDay - 1; i >= 0; i--) {
-                const day = daysInPrevMonth - i;
-                const dayElement = createDayElement(day, true, new Date(year, month - 1, day));
-                daysGrid.appendChild(dayElement);
-            }
-
-            // Current month's days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const date = new Date(year, month, day);
-                const isToday = date.toDateString() === today.toDateString();
-                const isSelected = date.toDateString() === selectedDate.toDateString();
-                const dayElement = createDayElement(day, false, date, isToday, isSelected);
-                daysGrid.appendChild(dayElement);
-            }
-
-            // Next month's days
-            const lastDay = new Date(year, month + 1, 0).getDay();
-            for (let day = 1; lastDay + day <= 6; day++) {
-                const dayElement = createDayElement(day, true, new Date(year, month + 1, day));
-                daysGrid.appendChild(dayElement);
-            }
+    function press(value) {
+      if (value === ".") {
+        const parts = expression.split(/[^0-9.]/);
+        const last = parts[parts.length - 1];
+        if (last.includes(".")) {
+          return;
         }
+      }
+      expression += value;
+      updateView();
+    }
 
-        function createDayElement(day, isOtherMonth, date, isToday = false, isSelected = false) {
-            const dayElement = document.createElement('div');
-            dayElement.className = 'day';
-            dayElement.textContent = day;
+    function clearAll() {
+      expression = "";
+      updateView();
+    }
 
-            if (isOtherMonth) {
-                dayElement.classList.add('other-month');
-            } else {
-                dayElement.onclick = () => selectDate(date);
-                
-                if (isToday) {
-                    dayElement.classList.add('today');
-                }
+    function deleteChar() {
+      expression = expression.slice(0, -1);
+      updateView();
+    }
 
-                if (isSelected) {
-                    dayElement.classList.add('selected');
-                }
+    function toggleNeg() {
+      const m = /(-?[\d.]+)$/.exec(expression);
+      if (!m) {
+        expression = expression ? expression + "-" : "-";
+        updateView();
+        return;
+      }
+      const num = m[0];
+      const start = expression.slice(0, -num.length);
+      expression = num.startsWith("-") ? start + num.slice(1) : start + "-" + num;
+      updateView();
+    }
 
-                // Check if date has events
-                const dateStr = date.toDateString();
-                if (events[dateStr] && events[dateStr].length > 0) {
-                    dayElement.classList.add('has-event');
-                }
-            }
+    function calculate() {
+      try {
+        const val = Function("return (" + expression + ")")();
+        expression = (val === undefined || Number.isNaN(val)) ? "" : String(val);
+      } catch (e) {
+        expression = "";
+        resultEl.textContent = "Error";
+      }
+      updateView();
+    }
 
-            return dayElement;
-        }
+    document.querySelectorAll("button").forEach((b) => {
+      b.addEventListener("click", () => {
+        const v = b.getAttribute("data-value");
+        const a = b.getAttribute("data-action");
+        if (a === "clear") return clearAll();
+        if (a === "del") return deleteChar();
+        if (a === "neg") return toggleNeg();
+        if (a === "equals") return calculate();
+        if (v) return press(v);
+      });
+    });
 
-        function selectDate(date) {
-            selectedDate = new Date(date);
-            renderCalendar();
-            updateSelectedDateDisplay();
-            displayEvents();
-            document.getElementById('eventInput').focus();
-        }
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" || e.key === "Delete") return clearAll();
+      if (e.key === "Backspace") return deleteChar();
+      if (e.key === "Enter" || e.key === "=") return calculate();
+      if (/^[0-9]$/.test(e.key)) return press(e.key);
+      if (e.key === ".") return press(".");
+      if (e.key === "+" || e.key === "-" || e.key === "*" || e.key === "/") return press(e.key);
+    });
 
-        function updateSelectedDateDisplay() {
-            const options = { weekday: 'long', month: 'short', day: 'numeric' };
-            const dateStr = selectedDate.toLocaleDateString('en-US', options);
-            document.getElementById('selectedDate').textContent = dateStr;
-        }
-
-        function previousMonth() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        }
-
-        function nextMonth() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        }
-
-        function goToToday() {
-            currentDate = new Date();
-            selectDate(new Date());
-        }
-
-        function addEvent() {
-            const input = document.getElementById('eventInput');
-            const eventText = input.value.trim();
-
-            if (eventText === '') {
-                alert('Please enter an event name');
-                return;
-            }
-
-            const dateStr = selectedDate.toDateString();
-            if (!events[dateStr]) {
-                events[dateStr] = [];
-            }
-
-            events[dateStr].push({
-                id: Date.now(),
-                text: eventText
-            });
-
-            input.value = '';
-            renderCalendar();
-            displayEvents();
-            input.focus();
-        }
-
-        function handleEventKeypress(event) {
-            if (event.key === 'Enter') {
-                addEvent();
-            }
-        }
-
-        function displayEvents() {
-            const dateStr = selectedDate.toDateString();
-            const eventsList = document.getElementById('eventsList');
-            const dateEvents = events[dateStr] || [];
-
-            eventsList.innerHTML = '';
-
-            if (dateEvents.length === 0) {
-                eventsList.innerHTML = '<div style="color: #999; padding: 10px; text-align: center;">No events yet</div>';
-                return;
-            }
-
-            dateEvents.forEach(event => {
-                const eventItem = document.createElement('div');
-                eventItem.className = 'event-item';
-                eventItem.innerHTML = `
-                    <div class="event-item-text">${event.text}</div>
-                    <button class="delete-event-btn" onclick="deleteEvent(${event.id})">Delete</button>
-                `;
-                eventsList.appendChild(eventItem);
-            });
-        }
-
-        function deleteEvent(eventId) {
-            const dateStr = selectedDate.toDateString();
-            if (events[dateStr]) {
-                events[dateStr] = events[dateStr].filter(e => e.id !== eventId);
-                if (events[dateStr].length === 0) {
-                    delete events[dateStr];
-                }
-                renderCalendar();
-                displayEvents();
-            }
-        }
-
-        // Initialize calendar on page load
-        window.addEventListener('load', initCalendar);
-    </script>
+    updateView();
+  </script>
 </body>
 </html>
